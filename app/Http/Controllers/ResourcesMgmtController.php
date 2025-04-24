@@ -38,7 +38,7 @@ class ResourcesMgmtController extends Controller
     public function index()
     {
         return view('resourcesMgmt', [
-            'crew' => Crew::all(),
+            'crews' => Crew::all(),
             'destinations' => Destination::all(),
             'technologies' => Technology::all(),
         ]);
