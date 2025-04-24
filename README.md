@@ -1,6 +1,24 @@
 Space Tourism API - README
 
 
+
+///////////////////
+AVANT DE CONTINUER
+///////////////////
+
+#Ce repository contient plusieurs branches différentes : 
+# - une branche générale Master
+# - une branche blade-display qui permettra de voir les fonctionnalités au niveau d'un front en Blade
+# - une branche postman-tests qui permettra d'effectuer les tests de l'APi sur Postman
+
+#J'ai été obligé de créer ces 2 branches car je n'ai pas réussi à retourner à la fois une vue et un fichier json, qui permettrait à chaque Controller de faire les 2 choses demandées.
+#Pour cette raison, j'ai séparé mon travail en 2 branches, afin de faciliter le travail.
+
+//////////////////////////
+MERCI DE VOTRE ATTENTION
+//////////////////////////
+
+
 Table of Contents :
 
 - Prérequis
