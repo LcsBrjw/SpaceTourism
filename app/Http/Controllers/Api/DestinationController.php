@@ -10,62 +10,64 @@ use Illuminate\Support\Facades\Validator;
 class DestinationController extends Controller
 {
     /**
- * @group Destinations
- * 
- * API endpoints for managing destinations
- */
-
-/**
- * Get all destinations
- *
- * This endpoint returns a list of all destinations in the system.
- *
- * @response 200 {
- *  "data": [
- *    {
- *      "id": 1,
- *      "name": "Destination Name",
- *      "created_at": "2025-04-23T14:00:00Z",
- *      "updated_at": "2025-04-23T14:00:00Z"
- *    }
- *  ]
- * }
- *
- * @response 500 {
- *  "error": "Internal server error"
- * }
- */
-    public function create()
+     * @group Destinations
+     * 
+     * API endpoints for managing destinations
+     */
+    
+    /**
+     * Get all destinations
+     *
+     * This endpoint returns a list of all destinations in the system.
+     *
+     * @response 200 {
+     *  "data": [
+     *    {
+     *      "id": 1,
+     *      "name": "Destination Name",
+     *      "created_at": "2025-04-23T14:00:00Z",
+     *      "updated_at": "2025-04-23T14:00:00Z"
+     *    }
+     *  ]
+     * }
+     *
+     * @response 500 {
+     *  "error": "Internal server error"
+     * }
+     */
+    public function index()
     {
-        return view('resourcesMgmt.destinationForm');
+        // Récupère toutes les destinations
+        $destinations = Destination::all();
+
+        // Retourne la réponse JSON avec les données des destinations
+        return response()->json([
+            'data' => $destinations,
+        ], 200);
     }
 
-/**
- * @group Destinations
- * 
- * API endpoints for managing destinations
- */
-
-/**
- * Get all destinations
- *
- * This endpoint returns a list of all destinations in the system.
- *
- * @response 200 {
- *  "data": [
- *    {
- *      "id": 1,
- *      "name": "Destination Name",
- *      "created_at": "2025-04-23T14:00:00Z",
- *      "updated_at": "2025-04-23T14:00:00Z"
- *    }
- *  ]
- * }
- *
- * @response 500 {
- *  "error": "Internal server error"
- * }
- */    public function store(Request $request)
+    /**
+     * Create a new destination
+     *
+     * This endpoint creates a new destination and returns the created resource.
+     *
+     * @response 201 {
+     *  "data": {
+     *    "id": 1,
+     *    "name": "Destination Name",
+     *    "description": "Description of the destination",
+     *    "avgDist": 500,
+     *    "timeTravel": 12,
+     *    "created_at": "2025-04-23T14:00:00Z",
+     *    "updated_at": "2025-04-23T14:00:00Z"
+     *  }
+     * }
+     *
+     * @response 400 {
+     *  "error": "Validation error"
+     * }
+     */
+    public function store(Request $request)
     {
         // Validation avec Validator
         $validator = Validator::make($request->all(), [
@@ -76,147 +78,150 @@ class DestinationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'error' => 'Validation error',
+                'message' => $validator->errors(),
+            ], 400);
         }
 
         // Créer une nouvelle destination
-        Destination::create($request->all());
+        $destination = Destination::create($request->all());
 
-        // Rediriger vers la page de gestion des ressources
-        return redirect()->route('dashboard')->with('success', 'Destination ajoutée avec succès!');
+        // Retourne la réponse JSON avec la destination créée
+        return response()->json([
+            'data' => $destination,
+        ], 201);
     }
-
 
     /**
- * @group Destinations
- * 
- * API endpoints for managing destinations
- */
+     * Edit a destination by ID
+     *
+     * This endpoint retrieves a destination by ID and returns it.
+     *
+     * @response 200 {
+     *  "data": {
+     *    "id": 1,
+     *    "name": "Destination Name",
+     *    "description": "Description of the destination",
+     *    "avgDist": 500,
+     *    "timeTravel": 12,
+     *    "created_at": "2025-04-23T14:00:00Z",
+     *    "updated_at": "2025-04-23T14:00:00Z"
+     *  }
+     * }
+     *
+     * @response 404 {
+     *  "error": "Destination not found"
+     * }
+     */
+    public function show($id)
+    {
+        // Récupère la destination par son ID
+        $destination = Destination::find($id);
 
-/**
- * Get all destinations
- *
- * This endpoint returns a list of all destinations in the system.
- *
- * @response 200 {
- *  "data": [
- *    {
- *      "id": 1,
- *      "name": "Destination Name",
- *      "created_at": "2025-04-23T14:00:00Z",
- *      "updated_at": "2025-04-23T14:00:00Z"
- *    }
- *  ]
- * }
- *
- * @response 500 {
- *  "error": "Internal server error"
- * }
- */
-    public function edit($id)
-{
-    // Récupère la destination par son ID
-    $destination = Destination::findOrFail($id);
-    
-    // Affiche la vue avec les informations de la destination à modifier
-    return view('resourcesMgmt.destinationUpdate', compact('destination'));
-}
+        // Si la destination n'est pas trouvée, renvoie une erreur 404
+        if (!$destination) {
+            return response()->json([
+                'error' => 'Destination not found',
+            ], 404);
+        }
 
-
-/**
- * @group Destinations
- * 
- * API endpoints for managing destinations
- */
-
-/**
- * Get all destinations
- *
- * This endpoint returns a list of all destinations in the system.
- *
- * @response 200 {
- *  "data": [
- *    {
- *      "id": 1,
- *      "name": "Destination Name",
- *      "created_at": "2025-04-23T14:00:00Z",
- *      "updated_at": "2025-04-23T14:00:00Z"
- *    }
- *  ]
- * }
- *
- * @response 500 {
- *  "error": "Internal server error"
- * }
- */
-public function update(Request $request, $id)
-{
-    // Récupère la destination par son ID
-    $destination = Destination::findOrFail($id);
-
-    // Validation des données soumises avec Validator
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'description' => 'required|string',
-        'avgDist' => 'required|numeric',
-        'timeTravel' => 'required|numeric',
-        'imageUrl' => 'nullable|string|url',  // L'image est optionnelle
-    ]);
-
-    // Vérifie si la validation échoue
-    if ($validator->fails()) {
-        // Redirige en arrière avec les erreurs
-        return redirect()->route('resources-mgmt.destinations.edit', $id)
-                         ->withErrors($validator)
-                         ->withInput();
+        // Retourne la destination trouvée
+        return response()->json([
+            'data' => $destination,
+        ], 200);
     }
 
-    // Si la validation passe, met à jour la destination avec les données validées
-    $destination->update($validator->validated());
+    /**
+     * Update a destination by ID
+     *
+     * This endpoint updates a destination by ID and returns the updated resource.
+     *
+     * @response 200 {
+     *  "data": {
+     *    "id": 1,
+     *    "name": "Updated Destination Name",
+     *    "description": "Updated description of the destination",
+     *    "avgDist": 600,
+     *    "timeTravel": 15,
+     *    "created_at": "2025-04-23T14:00:00Z",
+     *    "updated_at": "2025-04-23T14:00:00Z"
+     *  }
+     * }
+     *
+     * @response 404 {
+     *  "error": "Destination not found"
+     * }
+     */
+    public function update(Request $request, $id)
+    {
+        // Récupère la destination par son ID
+        $destination = Destination::find($id);
 
-    // Redirige vers la page de gestion des ressources avec un message de succès
-    return redirect()->route('dashboard')->with('success', 'Destination mise à jour avec succès!');
+        // Si la destination n'existe pas, renvoie une erreur 404
+        if (!$destination) {
+            return response()->json([
+                'error' => 'Destination not found',
+            ], 404);
+        }
+
+        // Validation des données avec Validator
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'avgDist' => 'required|numeric',
+            'timeTravel' => 'required|numeric',
+            'imageUrl' => 'nullable|string|url', // L'image est optionnelle
+        ]);
+
+        // Vérifie si la validation échoue
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validation error',
+                'message' => $validator->errors(),
+            ], 400);
+        }
+
+        // Met à jour la destination avec les données validées
+        $destination->update($request->all());
+
+        // Retourne la réponse JSON avec la destination mise à jour
+        return response()->json([
+            'data' => $destination,
+        ], 200);
+    }
+
+    /**
+     * Delete a destination by ID
+     *
+     * This endpoint deletes a destination by ID and returns a confirmation.
+     *
+     * @response 200 {
+     *  "message": "Destination deleted successfully"
+     * }
+     *
+     * @response 404 {
+     *  "error": "Destination not found"
+     * }
+     */
+    public function destroy($id)
+    {
+        // Récupère la destination par son ID
+        $destination = Destination::find($id);
+
+        // Si la destination n'existe pas, renvoie une erreur 404
+        if (!$destination) {
+            return response()->json([
+                'error' => 'Destination not found',
+            ], 404);
+        }
+
+        // Supprime la destination
+        $destination->delete();
+
+        // Retourne un message de confirmation
+        return response()->json([
+            'message' => 'Destination deleted successfully',
+        ], 200);
+    }
 }
-
-/**
- * @group Destinations
- * 
- * API endpoints for managing destinations
- */
-
-/**
- * Get all destinations
- *
- * This endpoint returns a list of all destinations in the system.
- *
- * @response 200 {
- *  "data": [
- *    {
- *      "id": 1,
- *      "name": "Destination Name",
- *      "created_at": "2025-04-23T14:00:00Z",
- *      "updated_at": "2025-04-23T14:00:00Z"
- *    }
- *  ]
- * }
- *
- * @response 500 {
- *  "error": "Internal server error"
- * }
- */
-public function destroy($id)
-{
-    // Trouver le membre d'équipage par ID
-    $destination = Destination::findOrFail($id);
-
-    // Supprimer le membre d'équipage
-    $destination->delete();
-
-    // Rediriger avec un message de succès
-    return redirect()->route('dashboard')->with('success', 'Destination supprimée avec succès!');
-}
-
-
-}
-
-
