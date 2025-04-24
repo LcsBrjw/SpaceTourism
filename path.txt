@@ -1,0 +1,111 @@
+Feuille de route API Laravel + Tests (backend only)
+✅ 1. Initialisation & Préparation
+ Créer projet Laravel
+
+ Configurer .env (base SQLite conseillée pour tests)
+
+ Créer les migrations :
+
+destinations, crew, technology
+
+ Créer les modèles
+
+ Lancer les migrations
+
+✅ 2. Ajout des données
+ Créer data.json
+
+ Créer les seeders : DestinationSeeder, CrewSeeder, TechnologySeeder
+
+ Lancer les seeders (php artisan db:seed --class=...)
+
+ Vérifier en DB
+
+✅ 3. Création de l’API
+ Définir les routes dans routes/api.php
+
+ Générer les contrôleurs avec --api
+
+ Implémenter les méthodes :
+
+index, show, store, update, destroy
+
+✅ 4. Tester avec Postman
+ Créer une collection pour tous tes endpoints
+
+ Tester chaque méthode : GET / POST / PUT / DELETE
+
+✅ 5. Validation des données
+ Ajouter validation dans les méthodes store() et update()
+
+ Retourner les erreurs proprement (422)
+
+✅ 6. 🔬 Tests Unitaires & Fonctionnels
+➡️ À ajouter une fois que chaque contrôleur a au moins 2 méthodes fonctionnelles
+
+📁 Les tests se placent dans : tests/Feature/
+
+Pour chaque entité (Destination, Crew, Technology) :
+
+📌 Exemple : tests/Feature/DestinationTest.php
+bash
+Copier
+Modifier
+php artisan make:test DestinationTest
+Et à l’intérieur :
+
+php
+Copier
+Modifier
+public function test_it_lists_destinations()
+{
+    $response = $this->getJson('/api/destinations');
+
+    $response->assertStatus(200);
+    $response->assertJsonStructure([
+        '*' => ['id', 'name', 'imageUrl', 'description', 'avgDist', 'timeTravel']
+    ]);
+}
+
+public function test_it_creates_a_destination()
+{
+    $data = [
+        'name' => 'Pluton',
+        'imageUrl' => '/destination/image-pluton.png',
+        'description' => 'Frozen world.',
+        'avgDist' => '5.9 bil. km',
+        'timeTravel' => '20 years'
+    ];
+
+    $response = $this->postJson('/api/destinations', $data);
+
+    $response->assertStatus(201);
+    $this->assertDatabaseHas('destinations', ['name' => 'Pluton']);
+}
+🛠️ À faire :
+
+ 1 fichier de test par entité
+
+ Ajouter tests :
+
+ GET all
+
+ GET one
+
+ POST (valide/invalide)
+
+ PUT
+
+ DELETE
+
+✅ 7. CORS + API Resource (optionnel mais clean)
+ Modifier config/cors.php si besoin
+
+ Créer des Resource pour structurer le JSON (php artisan make:resource)
+
+✅ 8. Nettoyage et doc
+ Supprimer les données de test
+
+ Documenter les endpoints dans Postman ou README
+
+ Ajouter un script pour reseeder (php artisan migrate:fresh --seed)
